@@ -8,7 +8,7 @@ class DBManager:
                        'port': '5432',
                        'database': 'hh_ru',
                        'user': 'postgres',
-                       'password': 'asg6515ZX'}
+                       'password': '***'}
 
         self.conn = psycopg2.connect(**self.params)
 

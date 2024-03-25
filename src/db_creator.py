@@ -13,12 +13,12 @@ class DBCreator:
                        'port': '5432',
                        'database': self.db_name,
                        'user': 'postgres',
-                       'password': 'asg6515ZX'}
+                       'password': '***'}
 
     def create_database(self) -> None:
         """Создает базу данных"""
         self.conn = psycopg2.connect(host='localhost', port='5432', database='postgres',
-                                     user='postgres', password='asg6515ZX')
+                                     user='postgres', password='***')
         try:
             cursor = self.conn.cursor()
             self.conn.autocommit = True
