@@ -13,12 +13,12 @@ class DBCreator:
                        'port': '5432',
                        'database': self.db_name,
                        'user': 'postgres',
-                       'password': '***'}
+                       'password': 'asg6515ZX'}
 
     def create_database(self) -> None:
         """Создает базу данных"""
         self.conn = psycopg2.connect(host='localhost', port='5432', database='postgres',
-                                     user='postgres', password='***')
+                                     user='postgres', password='asg6515ZX')
         try:
             cursor = self.conn.cursor()
             self.conn.autocommit = True
@@ -80,6 +80,14 @@ class DBCreator:
         finally:
             if self.conn is not None:
                 self.conn.close()
+
+    def drop_db(self, cur):
+        cur.execute('select pg_terminate_backend(pg_stat_activity.pid) '
+                    'from pg_stat_activity '
+                    f'where pg_stat_activity.datname = "{self.db_name}" '
+                    'and pid <>pg_backend_pid();' 
+                    f'DROP DATABASE {self.db_name}'
+                    )
 
 
 if __name__ == '__main__':
