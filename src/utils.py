@@ -39,6 +39,7 @@ def sort_data(data):
             currency = i['salary']['currency']
 
         data_dict = {
+            'vacancy_id': i['id'],
             'vacancy_name': i['name'],
             'city': i['area']['name'],
             'salary_from': salary_from,

@@ -1,14 +1,10 @@
 import psycopg2
-from pathlib import Path
 import json
-
-DATA_DIR_VACANCIES = Path(__file__).parent.parent.joinpath('data', 'hh_vacancies.json')
-DATA_DIR_VAC_COMP = Path(__file__).parent.parent.joinpath('data', 'hh_vac_company.json')
-DATA_DIR_SORT = Path(__file__).parent.parent.joinpath('data', 'hh_vac_company_sorted.json')
 
 
 class DBCreator:
     """Создает БД, таблицу и заполняет ее"""
+
     def __init__(self, db_name='hh_ru'):
 
         self.db_name = db_name
@@ -17,12 +13,12 @@ class DBCreator:
                        'port': '5432',
                        'database': self.db_name,
                        'user': 'postgres',
-                       'password': 'asg6515ZX'}
+                       'password': '***'}
 
     def create_database(self) -> None:
         """Создает базу данных"""
         self.conn = psycopg2.connect(host='localhost', port='5432', database='postgres',
-                                     user='postgres', password='asg6515ZX')
+                                     user='postgres', password='***')
         try:
             cursor = self.conn.cursor()
             self.conn.autocommit = True
@@ -87,7 +83,4 @@ class DBCreator:
 
 
 if __name__ == '__main__':
-    dbm = DBCreator()
-    dbm.create_database()
-    dbm.create_table('vacancies')
-    dbm.fill_the_table('vacancies')
+    pass
