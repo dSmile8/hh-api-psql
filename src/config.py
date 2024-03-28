@@ -1,7 +1,10 @@
 from configparser import ConfigParser
+from pathlib import Path
+
+DATA_DIR = Path(__file__).parent.parent.joinpath('data', 'database.ini')
 
 
-def config(filename="database.ini", section="postgresql"):
+def config(filename=DATA_DIR, section="postgresql"):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -15,6 +18,7 @@ def config(filename="database.ini", section="postgresql"):
         raise Exception(
             'Section {0} is not found in the {1} file.'.format(section, filename))
     return db
+
 
 if __name__ == '__main__':
     print(config())

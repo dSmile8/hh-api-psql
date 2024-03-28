@@ -15,7 +15,7 @@ class ApiVacancyService(ABC):
 
 class HeadHunterAPI(ApiVacancyService):
 
-    def __init__(self, name: str, company_id: list = None):
+    def __init__(self, name: str = None, company_id: list = None):
         self.__url = 'https://api.hh.ru/vacancies'
         self.__name = name
         self.__company_id = company_id
@@ -36,12 +36,12 @@ class HeadHunterAPI(ApiVacancyService):
         """
         return self.connecting_to_api().json()
 
-    @classmethod
-    def get_default_company_list(cls):
+    @staticmethod
+    def get_default_company_list():
         company_id_list = []
         params = {'area': '113',
                   'sort_by': 'by_vacancies_open',
-                  'per_page': 1}
+                  'per_page': 10}
         data = requests.get('https://api.hh.ru/employers', params=params).json()
         for i in data['items']:
             company_id_list.append(i['id'])
@@ -69,7 +69,6 @@ class HeadHunterAPI(ApiVacancyService):
 
 
 if __name__ == '__main__':
-    a = HeadHunterAPI.get_default_company_list()
-    hh = HeadHunterAPI('Python', a)
-    print(hh.connecting_to_api())
-    print(hh.get_vacancies())
+    a = HeadHunterAPI().get_default_company_list()
+    print(a)
+

@@ -1,16 +1,13 @@
 import psycopg2
+from config import config
+from db_creator import DBCreator
 
 
 class DBManager:
-
-    def __init__(self):
-        self.params = {'host': 'localhost',
-                       'port': '5432',
-                       'database': 'hh_ru',
-                       'user': 'postgres',
-                       'password': 'asg6515ZX'}
-
-        self.conn = psycopg2.connect(**self.params)
+    def __init__(self, name='hh_ru'):
+        self.name = name
+        self.params = config()
+        self.conn = psycopg2.connect(**self.params, database=self.name)
 
     def get_companies_and_vacancies_count(self, cur) -> list:
         """Получает список всех компаний и количество вакансий у каждой компании"""
