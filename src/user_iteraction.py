@@ -13,30 +13,51 @@ DATA_DIR_SORT = Path(__file__).parent.parent.joinpath('data', 'hh_vac_company_so
 
 
 def user_iteraction():
-    vacancy_name = input('Введите интересующую вас вакансию, например: "водитель"\n').lower()
-    hh_vacancies = HeadHunterAPI(vacancy_name)
+    hh_vacancies = HeadHunterAPI()
     file_worker = WorkWithFile()
     employers_default_list = hh_vacancies.get_default_company_list()
-    db_name = input('Введите имя создаваемой БД, если хотите оставить имя БД по умолчанию(hh_ru), просто нажмите  Enter ')
+    db_name = input(
+        'Введите имя создаваемой БД, если хотите оставить имя БД по умолчанию(hh_ru), просто нажмите  Enter ')
 
     db_creat = DBCreator(db_name)
     file_worker.save_to_json(DATA_DIR_VACANCIES, hh_vacancies.get_vacancies())  # Получаем список вакансий
     # по запросу и сохраняем их в файл
-    action1 = int(input('Выберете id компаний из списка самостоятельно или оставить список компаний по умолчанию?\n'
-                    '1 - выбрать самому / 0 - оставить по умолчанию'))
-    try:
-        if action1 == 1:
-            print_employers(file_worker.data_from_json(DATA_DIR_VACANCIES))  # Вывод на экран названия компаний и их id
-            company_list = create_company_list()  # Создаем список компаний
-            hh_vacancies_company = HeadHunterAPI(vacancy_name, company_list)  # Делаем запрос к hh.ru со списком
-            # интересующих компаний
-            file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())  # Сохраняем
-            # в файл
-        if action1 == 0:
-            hh_vacancies_company = HeadHunterAPI(vacancy_name, employers_default_list)
-            file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())
-    except ValueError:
-        print("Внимательней, нужно ввести ЧИСЛО 1 либо 0")
+    print('Выберете действия:\n'
+          '1) Выбрать id компаний из списка самостоятельно по интересующей Вас вакансии\n'
+          '2) Выбрать интересующие вас вакансии из списка компаний по умолчанию? (100 вакансий)\n'
+          '3) Выбрать все вакансии компаний по умолчанию (10 компаний)\n')
+    while True:
+        try:
+
+            action1 = int(
+                input('Для выбора варанта введите цифры:\n'
+                      '1 - вариант #1\n'
+                      '2 - вариант #2\n'
+                      '3 - вариант #3\n'
+                      ))
+            if action1 == 1:
+                vacancy_name = input('Введите интересующую вас вакансию, например: "водитель"\n').lower()
+                print_employers(
+                    file_worker.data_from_json(DATA_DIR_VACANCIES))  # Вывод на экран названия компаний и их id
+                company_list = create_company_list()  # Создаем список компаний
+                hh_vacancies_company = HeadHunterAPI(vacancy_name, company_list)  # Делаем запрос к hh.ru со списком
+                # интересующих компаний
+                file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())  # Сохраняем
+                # в файл
+                break
+            if action1 == 2:
+                vacancy_name = input('Введите интересующую вас вакансию, например: "водитель"\n').lower()
+                hh_vacancies_company = HeadHunterAPI(vacancy_name, employers_default_list)
+                file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())
+                break
+            if action1 == 3:
+                vacancy_name = None
+                hh_vacancies_company = HeadHunterAPI(vacancy_name, employers_default_list)
+                file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())
+                break
+        except ValueError:
+            print("Внимательней, нужно ввести ЧИСЛО 1 либо 0")
+            continue
 
     file_worker.save_to_json(DATA_DIR_SORT, sort_data(file_worker.data_from_json(DATA_DIR_VAC_COMP)))  # Сортируем
     # данные и сохраняем их в файл
@@ -44,7 +65,7 @@ def user_iteraction():
     db_creat.create_table('vacancies')  # Создаем таблицу
     db_creat.fill_the_table('vacancies', DATA_DIR_SORT)  # Заполняем таблицу
 
-    dbm = DBManager()
+    dbm = DBManager(db_creat.db_name)
     try:
         with dbm.conn as conn:
             with conn.cursor() as cur:
@@ -59,7 +80,6 @@ def user_iteraction():
                         break
                     else:
                         continue
-
                 while True:
                     answer2 = input(
                         'Хотите получить список всех вакансий с указанием названия компании, названия вакансии'
@@ -83,7 +103,6 @@ def user_iteraction():
                         break
                     else:
                         continue
-
                 while True:
                     answer4 = input('Хотите получить список всех вакансий, у которых зарплата '
                                     'выше средней по всем вакансиям? (y/n)').lower()
@@ -95,7 +114,6 @@ def user_iteraction():
                         break
                     else:
                         continue
-
                 while True:
                     answer5 = input('Хотите получить список всех вакансий, в названии которых содержатся переданные'
                                     ' в метод слова, например python? (y/n)').lower()
@@ -108,17 +126,6 @@ def user_iteraction():
                         break
                     else:
                         continue
-
-                # while True:
-                #     answer6 = input('Хотите удалить созданную БД? (y/n)').lower()
-                #     if answer6 == 'y':
-                #         db_creat.drop_db(cur)
-                #         print('БД успешно удалена')
-                #         break
-                #     if answer6 == 'n':
-                #         break
-                #     else:
-                #         continue
                 cur.close()
     except(Exception, psycopg2.DatabaseError) as error:
         print(error)
