@@ -1,24 +1,22 @@
 import psycopg2
 import json
+from config import config
 
 
 class DBCreator:
     """Создает БД, таблицу и заполняет ее"""
 
-    def __init__(self, db_name='hh_ru'):
-
-        self.db_name = db_name
+    def __init__(self, db_name=None):
+        if db_name == '':
+            self.db_name = 'hh_ru'
+        else:
+            self.db_name = db_name
         self.conn = None
-        self.params = {'host': 'localhost',
-                       'port': '5432',
-                       'database': self.db_name,
-                       'user': 'postgres',
-                       'password': '***'}
+        self.params = config()
 
     def create_database(self) -> None:
         """Создает базу данных"""
-        self.conn = psycopg2.connect(host='localhost', port='5432', database='postgres',
-                                     user='postgres', password='***')
+        self.conn = psycopg2.connect(**self.params)
         try:
             cursor = self.conn.cursor()
             self.conn.autocommit = True
@@ -32,7 +30,7 @@ class DBCreator:
 
     def create_table(self, table_name: str) -> None:
         """Создаёт таблицу в БД"""
-        self.conn = psycopg2.connect(**self.params)
+        self.conn = psycopg2.connect(**self.params, database=self.db_name)
         try:
             with self.conn as conn:
                 with conn.cursor() as cur:
@@ -61,7 +59,7 @@ class DBCreator:
 
     def fill_the_table(self, table_name: str, data_f) -> None:
         """Заполняет созданную таблицу в БД"""
-        self.conn = psycopg2.connect(**self.params)
+        self.conn = psycopg2.connect(**self.params, database=self.db_name)
         try:
             with self.conn as conn:
                 with conn.cursor() as cur:
@@ -85,7 +83,7 @@ class DBCreator:
         cur.execute('select pg_terminate_backend(pg_stat_activity.pid) '
                     'from pg_stat_activity '
                     f'where pg_stat_activity.datname = "{self.db_name}" '
-                    'and pid <>pg_backend_pid();' 
+                    'and pid <>pg_backend_pid();'
                     f'DROP DATABASE {self.db_name}'
                     )
 

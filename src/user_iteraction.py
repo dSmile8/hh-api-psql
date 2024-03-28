@@ -16,17 +16,27 @@ def user_iteraction():
     vacancy_name = input('Введите интересующую вас вакансию, например: "водитель"\n').lower()
     hh_vacancies = HeadHunterAPI(vacancy_name)
     file_worker = WorkWithFile()
-    db_creat = DBCreator()
+    employers_default_list = hh_vacancies.get_default_company_list()
+    db_name = input('Введите имя создаваемой БД, если хотите оставить имя БД по умолчанию(hh_ru), просто нажмите  Enter ')
+
+    db_creat = DBCreator(db_name)
     file_worker.save_to_json(DATA_DIR_VACANCIES, hh_vacancies.get_vacancies())  # Получаем список вакансий
     # по запросу и сохраняем их в файл
-
-    print_employers(file_worker.data_from_json(DATA_DIR_VACANCIES))  # Вывод на экран названия компаний и их id
-    company_list = create_company_list()  # Создаем список компаний
-    hh_vacancies_company = HeadHunterAPI(vacancy_name, company_list)  # Делаем запрос к hh.ru со списком
-    # интересующих компаний
-
-    file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())  # Сохраняем
-    # в файл
+    action1 = int(input('Выберете id компаний из списка самостоятельно или оставить список компаний по умолчанию?\n'
+                    '1 - выбрать самому / 0 - оставить по умолчанию'))
+    try:
+        if action1 == 1:
+            print_employers(file_worker.data_from_json(DATA_DIR_VACANCIES))  # Вывод на экран названия компаний и их id
+            company_list = create_company_list()  # Создаем список компаний
+            hh_vacancies_company = HeadHunterAPI(vacancy_name, company_list)  # Делаем запрос к hh.ru со списком
+            # интересующих компаний
+            file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())  # Сохраняем
+            # в файл
+        if action1 == 0:
+            hh_vacancies_company = HeadHunterAPI(vacancy_name, employers_default_list)
+            file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())
+    except ValueError:
+        print("Внимательней, нужно ввести ЧИСЛО 1 либо 0")
 
     file_worker.save_to_json(DATA_DIR_SORT, sort_data(file_worker.data_from_json(DATA_DIR_VAC_COMP)))  # Сортируем
     # данные и сохраняем их в файл
