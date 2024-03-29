@@ -13,22 +13,16 @@ DATA_DIR_SORT = Path(__file__).parent.parent.joinpath('data', 'hh_vac_company_so
 
 
 def user_iteraction():
-    hh_vacancies = HeadHunterAPI()
     file_worker = WorkWithFile()
-    employers_default_list = hh_vacancies.get_default_company_list()
     db_name = input(
         'Введите имя создаваемой БД, если хотите оставить имя БД по умолчанию(hh_ru), просто нажмите  Enter ')
-
     db_creat = DBCreator(db_name)
-    file_worker.save_to_json(DATA_DIR_VACANCIES, hh_vacancies.get_vacancies())  # Получаем список вакансий
-    # по запросу и сохраняем их в файл
     print('Выберете действия:\n'
           '1) Выбрать id компаний из списка самостоятельно по интересующей Вас вакансии\n'
           '2) Выбрать интересующие вас вакансии из списка компаний по умолчанию? (100 вакансий)\n'
           '3) Выбрать все вакансии компаний по умолчанию (10 компаний)\n')
     while True:
         try:
-
             action1 = int(
                 input('Для выбора варанта введите цифры:\n'
                       '1 - вариант #1\n'
@@ -37,23 +31,27 @@ def user_iteraction():
                       ))
             if action1 == 1:
                 vacancy_name = input('Введите интересующую вас вакансию, например: "водитель"\n').lower()
+                hh_vacancies_ = HeadHunterAPI(vacancy_name)
+                file_worker.save_to_json(DATA_DIR_VACANCIES, hh_vacancies_.get_vacancies())  # Получаем список вакансий
+                # по запросу и сохраняем их в файл
                 print_employers(
                     file_worker.data_from_json(DATA_DIR_VACANCIES))  # Вывод на экран названия компаний и их id
                 company_list = create_company_list()  # Создаем список компаний
-                hh_vacancies_company = HeadHunterAPI(vacancy_name, company_list)  # Делаем запрос к hh.ru со списком
+                print(company_list)
+                hh_vacancies_company_ = HeadHunterAPI(vacancy_name, company_list)  # Делаем запрос к hh.ru со списком
                 # интересующих компаний
-                file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())  # Сохраняем
+                file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company_.get_vacancies())  # Сохраняем
                 # в файл
                 break
             if action1 == 2:
                 vacancy_name = input('Введите интересующую вас вакансию, например: "водитель"\n').lower()
-                hh_vacancies_company = HeadHunterAPI(vacancy_name, employers_default_list)
-                file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())
+                hh_vacancies_company_ = HeadHunterAPI(vacancy_name, HeadHunterAPI.get_default_company_list())
+                file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company_.get_vacancies())
                 break
             if action1 == 3:
                 vacancy_name = None
-                hh_vacancies_company = HeadHunterAPI(vacancy_name, employers_default_list)
-                file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company.get_vacancies())
+                hh_vacancies_company_ = HeadHunterAPI(vacancy_name, HeadHunterAPI.get_default_company_list())
+                file_worker.save_to_json(DATA_DIR_VAC_COMP, hh_vacancies_company_.get_vacancies())
                 break
         except ValueError:
             print("Внимательней, нужно ввести ЧИСЛО 1 либо 0")
@@ -132,3 +130,7 @@ def user_iteraction():
     finally:
         if conn is not None:
             conn.close()
+
+
+if __name__ == '__main__':
+    pass

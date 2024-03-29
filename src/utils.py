@@ -13,9 +13,9 @@ def create_company_list() -> list:
     company_list = []
     while True:
         try:
-            company_name = int(input('Введите id компаний из предоставленного списка. Что-бы закончить'
-                                     ' ввод компаний, введите 0 - ноль.'))
-            if company_name == 0:
+            company_name = input('Введите id компаний из предоставленного списка. Что-бы закончить'
+                                 ' ввод компаний, введите 0 - ноль.')
+            if company_name == '0':
                 break
             else:
                 company_list.append(company_name)

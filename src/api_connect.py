@@ -24,6 +24,7 @@ class HeadHunterAPI(ApiVacancyService):
             'per_page': 100,  # количество вакансий
             'area': '113',  # Регион. Необходимо передавать id из справочника /areas.
             'employer_id': company_id,  # id компании
+            'only_with_salary': True
         }
 
     def connecting_to_api(self):
@@ -69,6 +70,5 @@ class HeadHunterAPI(ApiVacancyService):
 
 
 if __name__ == '__main__':
-    a = HeadHunterAPI().get_default_company_list()
-    print(a)
+    pass
 

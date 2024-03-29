@@ -35,8 +35,13 @@ class DBManager:
     def get_avg_salary(self, cur) -> int:
         """Получает среднюю зарплату по вакансиям"""
         cur.execute('SELECT (AVG(salary_from) + AVG(salary_to)) / 2 FROM vacancies')
+
         rows = cur.fetchall()
-        avg_salary = int((rows[0][0]))
+        avg_salary = rows[0][0]
+        if avg_salary is None:
+            avg_salary = 0
+        else:
+            avg_salary = int(rows[0][0])
         return avg_salary
 
     def get_vacancies_with_higher_salary(self, cur) -> list:
